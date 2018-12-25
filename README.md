@@ -12,4 +12,6 @@ In order to test the code, execute
 	testSeparabilityAnalysis;
 
 
+## Acknowledgements
 
+Supported by the University of Leicester (UK), the Ministry of Education and Science of the Russian Federation, project N 14.Y26.31.0022
