@@ -23,7 +23,7 @@ function [n_alpha,n_single,p_alpha,alphas,separable_fraction] = SeparabilityAnal
 
 ColinearityControl = 10;
 ProjectOnSphere = 1;
-alphas = 0.6:0.02:0.98;
+alphas = 0.5:0.02:0.98;
 ProducePlots = 1;
 
 for i=1:length(varargin)
@@ -41,12 +41,15 @@ for i=1:length(varargin)
    end
 end
 
-Xp = preprocessing(X,1,1,1,ProjectOnSphere,'EigValueRetainingFactor',ColinearityControl);
-xy = Xp*Xp';
-
 npoints = size(X,1);
 
-[separable_fraction,p_alpha] = checkSeparabilityMultipleAlpha(xy,alphas);
+Xp = preprocessing(X,1,1,1,ProjectOnSphere,'EigValueRetainingFactor',ColinearityControl);
+if size(Xp, 1) > 10000
+    [separable_fraction,p_alpha] = checkSeparabilityMultipleAlphaBig(Xp,alphas);
+else
+    xy = Xp*Xp';
+    [separable_fraction,p_alpha] = checkSeparabilityMultipleAlpha(xy,alphas);
+end
 py_mean = mean(p_alpha,2);
 
 [n_alpha,n_single] = dimension_uniform_sphere(py_mean,alphas,npoints);
@@ -99,4 +102,3 @@ set(gcf,'Position',[105         161        1115         344]);
 end
 
 end
-

@@ -1,5 +1,5 @@
 %clear all;
-npoints = 5000;
+npoints = 10000;
 
 dim_min = 1;
 dim_max = 30;
