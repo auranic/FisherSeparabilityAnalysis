@@ -6,7 +6,6 @@ function [separ_fraction,py] = checkSeparabilityMultipleAlpha(xy,alpha)
 dxy = diag(xy);
 sm = bsxfun(@rdivide,xy,dxy);
 
-
   if(size(alpha,1))>1 
       alpha = alpha';
   end
@@ -28,7 +27,8 @@ sm = bsxfun(@rdivide,xy,dxy);
 %  alpha = [-Inf alpha Inf];
 
 sm = sm - diag(diag(sm));
-counts = histc(sm',alpha)';
+[counts] = histc(sm',alpha);
+counts = counts';
 na=length(alpha); 
 for i=1:na-1 
     counts(:,na-i)=counts(:,na-i)+counts(:,na-i+1); 
