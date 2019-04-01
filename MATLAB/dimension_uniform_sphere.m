@@ -1,50 +1,54 @@
-function [n,n_single_estimate,alfa_single_estimate] = dimension_uniform_sphere(py,alpha,number_of_data_points)
-% Gives an estimation of the dimension of uniformly sampled n-sphere
-% corresponding to the average probability of being unseparable 
-% and a margin value
-%   Arguments:
-%   py - average probabilities of a data point to be UNseparable from the
-%   rest of data points
-%   alpha - set of values (margins), must be in the range (0;1)
-%   number_of_data_points (optional) - number of data points used to
-%   estimate py
+function [n, n_single_estimate, alfa_single_estimate]...
+    = dimension_uniform_sphere(py, alphas)
+%Gives an estimation of the dimension of uniformly sampled n-sphere
+%corresponding to the average probability of being unseparable and a margin
+%value 
+%
+%Inputs:
+%   py - average fraction of data points which are INseparable.
+%   alphas - set of values (margins), must be in the range (0;1)
 % It is assumed that the length of py and alpha vectors must be of the
-% same length
-% 
+% same.
+%
+%Outputs:
+%   n - effective dimension profile as a function of alpha
+%   n_single_estimate - a single estimate for the effective dimension 
+%   alfa_single_estimate is alpha for n_single_estimate.
+%
 
-if length(py)~=length(alpha)
-    error(sprintf('ERROR: length of py (%i) and alpha (%i) does not match',length(py),length(alpha)));
-    return;
-end
-
-n = zeros(1,length(alpha));
-for i=1:length(alpha)
-    if alpha(i)>=1
-        error('ERROR: alpha is >=1');
-    end 
-    if alpha(i)<=0    
-        error('ERROR: alpha is <=0');
+    % Sanity check of arguments
+    if length(py)~=length(alphas)
+        error('ERROR: length of py (%i) and alpha (%i) does not match',...
+            length(py), length(alphas));
     end
-    if py(i)==0
-        %py(i) = 1/number_of_data_points;
-        n(i) = NaN;
-    else
-        p = py(i);
-        a = alpha(i);
-        a2 = alpha(i)^2;
-        n(i) = lambertw(-(log(1-a2)/(2*pi*p*p*a*a*(1-a2))))/(-log(1-a2));
-        %napprox(i) = log(-log(1-a2))/(-log(1-a2))-log(2*pi*p*p*a*a*(1-a2))/(-log(1-a2));
-        %disp(sprintf('Argument for W(x) %f n(i)=%2.2f approx n(i)=%2.2f',-(log(1-a2)/(2*pi*p*p*a*a*(1-a2))),n(i),napprox(i)));
+    if ~isnumeric(alphas) || sum(alphas <= 0) > 0 || sum(alphas >= 1) > 0
+        error(['"Alphas" must be a real vector, with alpha range,'...
+            ' the values must be within (0,1) interval']);
     end
-end
+    
 
-inds = find(~isnan(n));
-%k = floor(length(inds)/2+0.5);
-alpha_max = max(alpha(inds));
-alpha_ref = alpha_max*0.9;
-k = find(abs(alpha(inds)-alpha_ref)==min(abs(alpha-alpha_ref)));
-alfa_single_estimate = alpha(inds(k));
-        p = py(inds(k));
-        a = alfa_single_estimate;
-        a2 = alfa_single_estimate^2;        
-n_single_estimate = lambertw(-(log(1-a2)/(2*pi*p*p*a*a*(1-a2))))/(-log(1-a2));
+    % Calculate dimension for each alpha
+    n = zeros(1,length(alphas));
+    for i=1:length(alphas)
+        if py(i) == 0
+            %All points are separable. Nothing to do and is not interesting
+            n(i) = NaN;
+        else
+            p = py(i);
+            a2 = alphas(i)^2;
+            w = log(1 - a2);
+            n(i) = lambertw(-(w / (2 * pi * p * p * a2 *(1 - a2)))) / (-w);
+        end
+    end
+    % Find indices of alphas which ar not completely separable 
+    inds = find(~isnan(n));
+    % Find the maximal value of such alpha
+    alpha_max = max(alphas(inds));
+    % The reference alpha is the closest to 90 of maximal partially
+    % separable alpha
+    alpha_ref = alpha_max * 0.9;
+    [~, k] = min(abs(alphas-alpha_ref));
+    % Get corresponding values
+    alfa_single_estimate = alphas(inds(k));
+    n_single_estimate = n(inds(k));
+end

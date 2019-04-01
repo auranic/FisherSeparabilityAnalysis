@@ -11,7 +11,7 @@ disp(dimension);
 X = randsphere(npoints,dimension,1);
 %X = spheredist(npoints,dimension);
 
-Xp = preprocessing(X,1,1,1,1,'EigValueRetainingFactor',10);
+Xp = preprocessing(X,1,1,1,1);
 xy = Xp*Xp';
 
 nbins = 10;
