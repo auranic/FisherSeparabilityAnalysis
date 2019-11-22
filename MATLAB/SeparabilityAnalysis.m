@@ -1,4 +1,4 @@
-function [n_alpha, n_single, p_alpha, alphas, separable_fraction]...
+function [n_alpha, n_single, p_alpha, alphas, separable_fraction, Xp]...
     = SeparabilityAnalysis(X, varargin)
 %Performs standard analysis of separability and produces standard plots. 
 %
@@ -78,6 +78,7 @@ function [n_alpha, n_single, p_alpha, alphas, separable_fraction]...
     % Preprocess data
     Xp = preprocessing(X, 1, 1, 1, ProjectOnSphere,...
         'ConditionalNumber',ConditionalNumber);
+    
     % Check separability
     [separable_fraction, p_alpha] = checkSeparabilityMultipleAlpha(Xp, alphas);
     

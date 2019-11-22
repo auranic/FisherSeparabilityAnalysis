@@ -38,7 +38,7 @@ function X = preprocessing(X,center,dimred,whiten,projectonsphere,varargin)
         sc = s/s(1);
         ind = find(sc>1/ConditionalNumber);
         X = X * v(:,ind);
-        %disp(sprintf('%i components is retained using factor %2.2f',length(ind),ConditionalNumber));
+        disp(sprintf('%i components is retained using factor %2.2f',length(ind),ConditionalNumber));
     end
 
     % whitening if requested
